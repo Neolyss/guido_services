@@ -7,7 +7,6 @@ class Client {
   List<ReseauClient> _reseaux;
   Adresse _adresse;
   TypeClient _type;
-  //TODO commandes;
 
   Client(this._nomClient, this._prenomClient, this._emailClient, this._adresse, this._reseaux, this._type):
       this._pointsFixeClient = 0, this._idClient="";
