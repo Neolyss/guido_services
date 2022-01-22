@@ -1,33 +1,85 @@
-class Client {
+
+
+import 'package:admin/models/CRUDAll.dart';
+import 'package:dio/dio.dart';
+
+class Client implements CRUDAll{
   String _idClient;
   String _nomClient;
   String _prenomClient;
   String _emailClient;
   int _pointsFixeClient;
-  List<ReseauClient> _reseaux;
+  List<ReseauSocial> _reseaux;
   Adresse _adresse;
   TypeClient _type;
 
   Client(this._nomClient, this._prenomClient, this._emailClient, this._adresse, this._reseaux, this._type):
       this._pointsFixeClient = 0, this._idClient="";
-}
 
-class ReseauClient {
-  ReseauSocial _reseauSocial;
-  String _url;
+  @override
+  dynamic create() async {
+    dynamic response;
+    try {
+      // response = await Dio().get(
+      //     'http://ensim.serveurtom.fr:7200/client/create/?'
+      //         'Nom_client=' + this._nomClient +
+      //         '&Prenom_client=' + this._prenomClient +
+      //         '&Email=' + this._emailClient +
+      //         '&Points_fixe=0'
+      //             '&Id_type=' + _type.id.toString());
+      print("azerty");
+      response = await Dio().post('http://ensim.serveurtom.fr:7200/client/create/', data:
+      {'Nom_client': this._nomClient,
+        'Prenom_client': this._prenomClient,
+        'Email' : this._emailClient,
+        'Points_fixe' : '0',
+        'Id_type' : _type.id.toString()},
+         // options: Options(contentType: Headers.jsonContentType),
+        onSendProgress: (int sent, int total) {
+          print('$sent $total');
+        },
+      );
+      print(response.data.toString());
+      // response = await Dio().post(url);
+    } catch (e){
+      print(e);
+    }
+    return response;
+  }
 
-  ReseauClient(this._reseauSocial, this._url);
+  @override
+  void delete() {
+    // TODO: implement delete
+  }
+
+  @override
+  void read(var id) {
+    // TODO: implement read
+  }
+
+  @override
+  void readAll() {
+    // TODO: implement readAll
+  }
+
+  @override
+  void update() {
+    // TODO: implement update
+  }
+
+
+
 }
 
 class ReseauSocial {
   String _nomReseau;
-
-  ReseauSocial(this._nomReseau);
+  String _url;
+  ReseauSocial(this._nomReseau, this._url);
 }
 
 class Adresse {
   int _idAdresse;
-  int _numeroAdresse;
+  String _numeroAdresse;
   String _nomAdresse;
   String _complement;
   String _codePostal;
@@ -46,7 +98,22 @@ class Telephone {
 }
 
 class TypeClient {
+  int _id;
   String _titreTypeClient;
 
-  TypeClient(this._titreTypeClient);
+  TypeClient(this._id, this._titreTypeClient);
+
+  String get titreTypeClient => _titreTypeClient;
+
+  set titreTypeClient(String value) {
+    _titreTypeClient = value;
+  }
+
+  int get id => _id;
+
+  set id(int value) {
+    _id = value;
+  }
+
+
 }

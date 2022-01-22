@@ -1,7 +1,17 @@
 abstract class CRUDAll {
-  void create();
-  void read();
+  dynamic create();
+  void read(var id);
   void update();
   void delete();
-  void readAll();
+  dynamic readAll();
+}
+
+class ObjectParamUnimplementedError implements UnimplementedError {
+  String error() => 'Le paramette n\'a pas été implementé corectement';
+
+  @override
+  String? get message => throw UnimplementedError();
+
+  @override
+  StackTrace? get stackTrace => throw UnimplementedError();
 }
