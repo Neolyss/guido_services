@@ -53,6 +53,15 @@ class FactureTruc {
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
   }
+  static Future<void> deleteCommande(var idComande, var idClient) async {
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/commande/delete/'+idComande+'/'+idClient;
+      await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+  }
+
 }
 
 @JsonSerializable()
