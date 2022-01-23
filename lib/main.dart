@@ -1,8 +1,12 @@
 import 'package:admin/constants.dart';
 import 'package:admin/controllers/CurrentPageController.dart';
 import 'package:admin/controllers/MenuController.dart';
+import 'package:admin/screens/client/client.dart';
+import 'package:admin/screens/clients/clients.dart';
+import 'package:admin/screens/login/login.dart';
 import 'package:admin/screens/main/main_screen.dart';
 import 'package:admin/screens/newClient/new_client_screen.dart';
+import 'package:admin/screens/register/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -31,16 +35,32 @@ class MyApp extends StatelessWidget {
             child: MainScreen(),
             providers: [
               ChangeNotifierProvider(create: (context) => MenuController(),),
-              ChangeNotifierProvider(create: (context) => CurrentPageController(0)),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(0, "Dashboard")),
+            ],
+          ),
+          "/clients" : (context) => MultiProvider(
+            child: ClientsScreen(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => MenuController(),),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(1, "Clients")),
+            ],
+          ),
+          "/client" : (context) => MultiProvider(
+            child: ClientScreen(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => MenuController(),),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(1, "Client")),
             ],
           ),
           "/newClient" : (context) => MultiProvider(
             child: NewClientScreen(),
             providers: [
               ChangeNotifierProvider(create: (context) => MenuController(),),
-              ChangeNotifierProvider(create: (context) => CurrentPageController(2)),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(2, "New Client")),
             ],
           ),
+          "/register" : (context) => Register(),
+          "/login" : (context) => Login(),
         },
       );
   }

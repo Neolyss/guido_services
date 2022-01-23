@@ -1,3 +1,4 @@
+import 'package:admin/controllers/CurrentPageController.dart';
 import 'package:admin/controllers/MenuController.dart';
 import 'package:admin/responsive.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class Header extends StatelessWidget {
           ),
         if (!Responsive.isMobile(context))
           Text(
-            "Dashboard",
+            context.read<CurrentPageController>().name,
             style: Theme.of(context).textTheme.headline6,
           ),
         if (!Responsive.isMobile(context))

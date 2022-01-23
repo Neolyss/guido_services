@@ -1,7 +1,9 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../../../constants.dart';
+import '../../../models/RecentFile.dart';
 
 class CommandsView extends StatefulWidget {
   const CommandsView({Key? key}) : super(key: key);
@@ -26,30 +28,38 @@ class _CommandsViewState extends State<CommandsView> {
             "Clients",
             style: Theme.of(context).textTheme.subtitle1,
           ),
+          Padding(padding: EdgeInsets.all(defaultPadding)),
           SizedBox(
             width: double.infinity,
-            child: DataTable2(
-              columnSpacing: defaultPadding,
-              minWidth: 600,
-              columns: [
-                DataColumn(
-                  label: Text("File Name"),
-                ),
-                DataColumn(
-                  label: Text("Date"),
-                ),
-                DataColumn(
-                  label: Text("Size"),
-                ),
+            child: Wrap(
+              runSpacing: 10,
+              children: [
+                CommandView(),
               ],
-              rows: List.generate(
-                demoRecentFiles.length,
-                    (index) => recentFileDataRow(demoRecentFiles[index]),
-              ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class CommandView extends StatefulWidget {
+  const CommandView({Key? key}) : super(key: key);
+
+  @override
+  _CommandViewState createState() => _CommandViewState();
+}
+
+class _CommandViewState extends State<CommandView> {
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      title: Text('ExpansionTile 1'),
+      subtitle: Text('Trailing expansion arrow icon'),
+      children: <Widget>[
+        ListTile(title: Text('This is tile number 1')),
+      ],
     );
   }
 }

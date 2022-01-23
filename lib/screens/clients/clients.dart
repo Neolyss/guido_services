@@ -1,13 +1,14 @@
-import 'package:admin/controllers/MenuController.dart';
-import 'package:admin/responsive.dart';
-import 'package:admin/screens/dashboard/dashboard_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/src/provider.dart';
 
-import 'components/side_menu.dart';
+import '../../controllers/MenuController.dart';
+import '../../responsive.dart';
+import '../main/components/side_menu.dart';
+import 'components/clients_view.dart';
 
-class MainScreen extends StatelessWidget {
+class ClientsScreen extends StatelessWidget {
+  const ClientsScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     //redirect(context);
@@ -28,18 +29,11 @@ class MainScreen extends StatelessWidget {
             Expanded(
               // It takes 5/6 part of the screen
               flex: 5,
-              child: DashboardScreen(),
+              child: ClientsView(),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-void redirect(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  if(prefs.get("login") == null) {
-    Navigator.pushNamed(context, "/login");
   }
 }

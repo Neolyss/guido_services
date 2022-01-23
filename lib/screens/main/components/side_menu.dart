@@ -20,9 +20,10 @@ class SideMenu extends StatelessWidget {
             child: Image.asset("assets/images/logo.png"),
           ),
           DrawerListTile(
-            title: "Home",
+            title: "Dashboard",
             svgSrc: "assets/icons/menu_dashbord.svg",
             press: () {
+              Provider.of<CurrentPageController>(context, listen: false).setNamePage("Dashboard");
               Provider.of<CurrentPageController>(context, listen: false).setCurrentPage(0);
               Navigator.pushNamed(context, "/");
             },
@@ -31,7 +32,11 @@ class SideMenu extends StatelessWidget {
           DrawerListTile(
             title: "Clients",
             svgSrc: "assets/icons/menu_tran.svg",
-            press: () {},
+            press: () {
+              Provider.of<CurrentPageController>(context, listen: false).setNamePage("Clients");
+              Provider.of<CurrentPageController>(context, listen: false).setCurrentPage(1);
+              Navigator.pushNamed(context, "/clients");
+            },
             pageNumber: 1,
           ),
           /*DrawerListTile(
@@ -55,9 +60,10 @@ class SideMenu extends StatelessWidget {
             press: () {},
           ),*/
           DrawerListTile(
-            title: "Profile",
+            title: "New Client",
             svgSrc: "assets/icons/menu_profile.svg",
             press: () {
+              Provider.of<CurrentPageController>(context, listen: false).setNamePage("New Client");
               Provider.of<CurrentPageController>(context, listen: false).setCurrentPage(2);
               Navigator.pushNamed(context, "/newClient");
             },
