@@ -5,9 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
-import 'package:admin/models/Client.dart';
+import 'package:admin/models/ClientOld.dart';
+import 'package:admin/models/ModelDeriver/Facture.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
@@ -33,14 +36,22 @@ void main() {
   // });
 
   test('Test création d\'un client dans la base de donnée', () async {
-    Telephone telephone = Telephone("+33", "0785964585");
-    Adresse adresse = Adresse(0, "numeroAdresse", "nomAdresse", "codePostal", "ville", telephone);
-    List<ReseauSocial> listReseau = <ReseauSocial>[];
-    ReseauSocial("nomReseau", "url");
-    TypeClient type = TypeClient(0, "titreTypeClient");
-    Client client =  Client("nomClient", "prenomClient", "email@email.fr", adresse, listReseau, type);
-    client.create();
-    print(client.create().toString());
-    print("");
+    // Telephone telephone = Telephone("+33", "0785964585");
+    // Adresse adresse = Adresse(
+    //     0, "numeroAdresse", "nomAdresse", "codePostal", "ville", telephone);
+    // List<ReseauSocial> listReseau = <ReseauSocial>[];
+    // ReseauSocial("nomReseau", "url");
+    // TypeClient type = TypeClient(0, "titreTypeClient");
+    // Client client = Client(
+    //     "nomClient", "prenomClient", "email@email.com", adresse, listReseau,
+    //     type);
+    //
+    // await client.create();
+  });
+
+  test('Test recupération d\'un client dans la base de donnée', () async {
+
+    FactureTruc? f = await FactureTruc.read("COMM3");
+    print("test");
   });
 }
