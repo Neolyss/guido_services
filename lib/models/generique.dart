@@ -291,4 +291,21 @@ class G {
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
   }
+
+  static Future<int> responsableCheck (String Pseudo,String MDP) async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/responsable/check/';
+      var params = {
+        "Pseudo":Pseudo,
+        "MDP":MDP
+      };
+      response = await RequeteHttp.methodePost(url, params);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return response as int;
+  }
+
+
 }
