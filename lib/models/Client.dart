@@ -51,3 +51,10 @@ class TypeClient {
 
   TypeClient(this._titreTypeClient);
 }
+
+enum TypeClientEnum {
+  Silver,
+  Gold,
+  Platinum,
+  Ultimate
+}

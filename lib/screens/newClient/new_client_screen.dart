@@ -26,19 +26,28 @@ class NewClientScreen extends StatelessWidget {
                 // and it takes 1/6 part of the screen
                 child: SideMenu(),
               ),
-            Expanded(
               // It takes 5/6 part of the screen
-              flex: 5,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(defaultPadding),
-                child: Column(
-                  children: [
-                    Header(),
-                    //FormWidget(),
-                  ],
+              Expanded(
+                flex: 5,
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Column(
+                      children: [
+                        Header(),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              FormWidget(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
