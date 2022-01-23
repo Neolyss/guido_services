@@ -42,8 +42,21 @@ class Client {
 
   Map<String, dynamic> toJson() => _$ClientToJson(this);
 
+  // static Future<Client?> read(id)  async {
+  //   String url = "http://ensim.serveurtom.fr:7200/facture/get/commande/"+id;
+  //   Response? response;
+  //   // try {
+  //   response = await Dio().get(url);
+  //   print(jsonDecode(response.data)['data']);
+  //   Client f = Client.fromJson(jsonDecode(response.data));
+  //   // } catch (error, stackTrace){
+  //   //   print("Exception occurred: $error  stackTrace: $stackTrace");
+  //   // }
+  //   return f;
+  // }
+
   static Future<Client?> read(id)  async {
-    String url = "http://ensim.serveurtom.fr:7200/facture/get/commande/"+id;
+    String url = "http://ensim.serveurtom.fr:7200/info/all/info/client/"+id;
     Response? response;
     // try {
     response = await Dio().get(url);
@@ -55,19 +68,19 @@ class Client {
     return f;
   }
 
-  static Future<List> readAll()  async {
-    String url = "http://ensim.serveurtom.fr:7200/info/all/client/get";
-    Response? response;
-    List clients = [];
-    // try {
-    response = await Dio().get(url);
-    print(jsonDecode(response.data));
-    Client f = Client.fromJson(jsonDecode(response.data));
-    // } catch (error, stackTrace){
-    //   print("Exception occurred: $error  stackTrace: $stackTrace");
-    // }
-    return clients;
-  }
+  // static Future<List<Client>> readAll()  async {
+  //   String url = "http://ensim.serveurtom.fr:7200/info/all/client/get";
+  //   Response? response;
+  //   List clients = [];
+  //   // try {
+  //   response = await Dio().get(url);
+  //   print(jsonDecode(response.data));
+  //   Client f = Client.fromJson(jsonDecode(response.data));
+  //   // } catch (error, stackTrace){
+  //   //   print("Exception occurred: $error  stackTrace: $stackTrace");
+  //   // }
+  //   return null;
+  // }
 
   void create() async {
     try {
