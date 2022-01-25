@@ -307,5 +307,46 @@ class G {
     return response as int;
   }
 
+  static Future<Map<String, dynamic>> commandeInfo (id_commande) async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/commande/info/'+id_commande;
+      response = await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return response?.data;
+  }
 
+
+  static Future<void> creeTypeClient (id_type, id_client) async {
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/cree/type/client/'+id_type+'/'+id_client;
+      await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+  }
+
+  static Future<Map<String, dynamic>> commandeInfoAllResponsable (pseudo_responsable) async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/commande/info/all/'+pseudo_responsable;
+      response = await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return response?.data['data'];
+  }
+
+  static Future<Map<String, dynamic>> factureGetCommande (id_commande) async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/facture/get/commande/'+id_commande;
+      response = await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return response?.data['data'];
+  }
 }
