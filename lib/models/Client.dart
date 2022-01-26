@@ -47,14 +47,24 @@ class Telephone {
 }
 
 class TypeClient {
-  String _titreTypeClient;
+  int _id;
+  String _nom;
 
-  TypeClient(this._titreTypeClient);
-}
+  TypeClient(this._id, this._nom);
 
-enum TypeClientEnum {
-  Silver,
-  Gold,
-  Platinum,
-  Ultimate
+  int get id => _id;
+  String get nom => _nom;
+
+  factory TypeClient.fromJson(Map<String, dynamic> json) {
+    return TypeClient(json["id"], json["nom"]);
+  }
+
+  static List<TypeClient> getListTypeClient(Map<String, dynamic> json) {
+    List<TypeClient> types = [];
+    json["data"].map((i) => TypeClient.fromJson(i)).forEach((e) => types.add(e));
+    return types;
+  }
+
+
+
 }

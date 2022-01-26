@@ -1,5 +1,6 @@
 import 'package:admin/models/Client.dart';
 import 'package:admin/models/Codes.dart';
+import 'package:admin/models/Reseaux.dart';
 import 'package:admin/models/generique.dart';
 import 'package:flutter/material.dart';
 
@@ -28,10 +29,15 @@ class _FormWidgetState extends State<FormWidget> {
   late TextEditingController _postalCodeTextController = TextEditingController();
   late TextEditingController _cityTextController = TextEditingController();
 
-  late CountryCode _phoneCode;
+  late CountryCode _phoneCode = CountryCode(name: 'France', dialCode: '+33', code: 'FR');
+  late String _code = _phoneCode.code;
   late Future<List<CountryCode>> _codes;
   late List<CountryCode> _countryCodes;
   var _links = <Widget>[];
+
+  late Future<Map<String, dynamic>> _futureReseaux;
+  late Future<Map<String, dynamic>> _futureType;
+  late int _typeIdController;
 
   void addLink() {
     setState(() {
@@ -58,50 +64,97 @@ class _FormWidgetState extends State<FormWidget> {
       _firstNameTextController = TextEditingController(text: client["nom_client"] ?? "");
       _lastNameTextController = TextEditingController(text: client["prenom_client"] ?? "");
       _emailTextController = TextEditingController(text: client["email_client"] ?? "");
-      _phoneNumberTextController = TextEditingController(text: client["telephone_adresse"] ?? "");
-      _streetNumberTextController = TextEditingController(text: client["numero_adresse"] ?? "");
-      _streetTextController = TextEditingController(text: client["nom_adresse"] ?? "");
-      _streetComplementTextController = TextEditingController(text: client["complement"] ?? "");
-      _postalCodeTextController = TextEditingController(text: client["code_postal"] ?? "");
-      _cityTextController = TextEditingController(text: client["ville"] ?? "");
+      _phoneNumberTextController = TextEditingController(text: client["adresse"]["telephone"] ?? "");
+      _streetNumberTextController = TextEditingController(text: client["adresse"]["numero"] ?? "");
+      _streetTextController = TextEditingController(text: client["adresse"]["nom"] ?? "");
+      _streetComplementTextController = TextEditingController(text: client["adresse"]["complement"] ?? "");
+      _postalCodeTextController = TextEditingController(text: client["adresse"]["code_postal"] ?? "");
+      _cityTextController = TextEditingController(text: client["adresse"]["ville"] ?? "");
     }
+    _futureReseaux = G.getAllReseaux();
+    _futureType = G.getAllTypes();
+    _typeIdController = 1;
     super.initState();
   }
 
   void submitForm() {
     final Map<String, dynamic> client = widget.client;
+    CountryCode currentCode = _countryCodes.firstWhere((element) => element.code == _code);
     if(client.isEmpty) { // Création
       developer.log("Create new client");
+      createClient().then(
+        (id) => createAdresse(currentCode, id).then(
+          (value) => Navigator.pushNamed(context, "/client", arguments: id)
+        )
+      );
     } else { // Modif
       String idClient = client["id_client"];
-      _countryCodes.firstWhere((element) => element.dialCode == _phoneCode.dialCode);
-      G.modificationClient(
-          idClient,
-          _emailTextController.text,
-          _lastNameTextController.text,
-          client["points_fixe"],
-          _firstNameTextController.text
-      ).then((value) => {
-        G.modifAdresse(
-          client["id_adresse"],
+      modificationClient(idClient, client).then((value) => {
+        // Check adresse
+        if(client["adresse"].isEmpty) {
+          developer.log("create adresse"),
+          createAdresse(currentCode, idClient).then((value) =>
+            Navigator.pushNamed(context, "/client", arguments: idClient)
+          )
+        } else {
+          developer.log("modif adresse"),
+          modifAdresse(client, currentCode, idClient).then((value) =>
+              Navigator.pushNamed(context, "/client", arguments: idClient)
+          )
+        },
+      });
+    }
+  }
+
+  Future<void> modifAdresse(Map<String, dynamic> client, CountryCode currentCode, String idClient) {
+    return G.modifAdresse(
+          client["adresse"]["id"],
           _streetNumberTextController.text,
           _streetTextController.text,
           _streetComplementTextController.text,
           _postalCodeTextController.text,
           _cityTextController.text,
-          client["code_pays_telephone"],
+          currentCode.dialCode,
           _phoneNumberTextController.text,
           idClient,
-        ).then((value) =>
-          Navigator.pushNamed(context, "/client", arguments: idClient)
-        )
-      });
-    }
+        );
+  }
+
+  Future<void> modificationClient(String idClient, Map<String, dynamic> client) {
+    return G.modificationClient(
+        idClient,
+        _emailTextController.text,
+        _lastNameTextController.text,
+        client["points_fixe"],
+        _firstNameTextController.text
+    );
+  }
+  
+  Future<String> createClient() {
+    return G.createClient(
+      _firstNameTextController.text,
+      _lastNameTextController.text,
+      _emailTextController.text,
+      0,
+      1,
+    );
+  }
+
+  Future<void> createAdresse(CountryCode currentCode, String id) {
+    return G.createAdresse(
+      _streetNumberTextController.text,
+      _streetTextController.text,
+      _streetComplementTextController.text,
+      _postalCodeTextController.text,
+      _cityTextController.text,
+      currentCode.dialCode,
+      _phoneNumberTextController.text,
+      id,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    TypeClientEnum? _typeController = TypeClientEnum.Silver;
     _codes = fetchCountryCodes();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -217,8 +270,21 @@ class _FormWidgetState extends State<FormWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Social Medias"),
-                    Column(
-                      children: _links,
+                    FutureBuilder(
+                      future: _futureReseaux,
+                      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                        if(snapshot.hasData) {
+                          return Column(
+                            children: _links,
+                          );
+                        } else if(snapshot.hasError) {
+                          return Text("Error please contacr an admin");
+                        } else {
+                          return Column(
+                            children: [],
+                          );
+                        }
+                      }
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -250,12 +316,18 @@ class _FormWidgetState extends State<FormWidget> {
                                 child: FittedBox(fit: BoxFit.cover, child: Text("${i.name} : ${i.dialCode}"),),
                               ),
                           ).forEach((e) => dropdowns.add(e));
-                          _phoneCode = codes.firstWhere((element) => element.dialCode == "+33"/*widget.client["code_pays_telephone"]*/);
+                          if(widget.client.isNotEmpty && !widget.client["adresse"].isEmpty) {
+                            developer.log(widget.client["adresse"]["code_pays_telephone"]);
+                            _phoneCode = codes.firstWhere((element) => element.dialCode == widget.client["adresse"]["code_pays_telephone"]);
+                            _code = _phoneCode.code;
+                          }
                           return Expanded(
                             child: DropdownButtonFormField<String>(
-                              onChanged: (value) {},
+                              onChanged: (value) {
+                                _code = value!;
+                              },
                               hint: Text("Dial Phone"),
-                              value: "FR",
+                              value: _phoneCode.code,
                               items: dropdowns,
                               isExpanded: true,
                             ),
@@ -295,16 +367,31 @@ class _FormWidgetState extends State<FormWidget> {
                   direction: Axis.horizontal,
                   children: [
                     FittedBox(fit: BoxFit.cover, child: Text("Type Client"),),
-                    DropdownButtonFormField<TypeClientEnum>(
-                      onChanged: (value) {
-                        setState(() {
-                          _typeController = value;
-                        });
-                      },
-                      isExpanded: true,
-                      value: TypeClientEnum.Silver,
-                      items: TypeClientEnum.values.map((element) { return DropdownMenuItem<TypeClientEnum>(value: element,child: Text(element.name)); }).toList(),
-                    ),
+                    FutureBuilder<Map<String, dynamic>>(
+                      future: _futureType,
+                      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                        if(snapshot.hasData) {
+                          List<TypeClient> types = TypeClient.getListTypeClient(snapshot.data!);
+                          return DropdownButtonFormField<int>(
+                            onChanged: (value) {
+                              setState(() {
+                                _typeIdController = value!;
+                              });
+                            },
+                            isExpanded: true,
+                            value: _typeIdController,
+                            items: types.map((e) => DropdownMenuItem<int>(value: e.id,child: Text(e.nom))).toList(),
+                          );
+                        } else if(snapshot.hasError) {
+                          return Text("Error please contacr an admin");
+                        } else {
+                          return DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            items: [],
+                            onChanged: (Object? value) {  },
+                          );
+                        }
+                    })
                   ],
                 ),
               ),
@@ -341,7 +428,6 @@ class _SocialMediaFieldState extends State<SocialMediaField> {
 
   @override
   Widget build(BuildContext context) {
-    final int index = widget.links.length - 1;
     String? _socialController = "Facebook";
     var _socials = [
       "Facebook", "Instagram", "Twitter"

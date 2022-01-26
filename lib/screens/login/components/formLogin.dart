@@ -23,9 +23,9 @@ class _FormLoginWidgetState extends State<FormLoginWidget> {
   final _usernameTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
 
-  void connect(SharedPreferences value) {
+  void connect(SharedPreferences value, String pseudo) {
     value.setBool("connected", true);
-    // ? value.setString("pseudo", pseudo);
+    value.setString("login", pseudo);
     Navigator.pushNamed(context, "/");
   }
 
@@ -92,7 +92,7 @@ class _FormLoginWidgetState extends State<FormLoginWidget> {
                         (value) => {
                           developer.log("r $value"),
                           if(value == 1) {
-                            SharedPreferences.getInstance().then((value) => connect(value))
+                            SharedPreferences.getInstance().then((value) => connect(value, username))
                           }
                         }
                       );

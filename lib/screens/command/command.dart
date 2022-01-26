@@ -75,45 +75,83 @@ class _CommandFormViewState extends State<CommandFormView> {
       key: _formKey,
       child: Column(
         children: [
+          // Infos principales
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Infos"),
-                Wrap(
-                  runSpacing: 10,
+                Text("Infos principales"),
+                Row(
                   children: [
-                    Row(
+                    Expanded(child:
+                      Row(
                       children: [
-                        Text("Nom : "),
+                        Text("Date Commande : "),
                         Padding(padding: EdgeInsets.all(defaultPadding)),
                         Expanded(child:
-                        TextFormField(
-                          //controller: _lastNameTextController,
-                          decoration: const InputDecoration(hintText: 'Last Name'),
-                        ),
+                          InputDatePickerFormField(
+                            lastDate: DateTime(2022, DateTime.december),
+                            firstDate: DateTime(2022, DateTime.january),
+                            //controller: _firstNameTextController,
+                          ),
                         ),
                       ],
                     ),
-                    Row(
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                    ),
+                    Expanded(child:
+                      Row(
                       children: [
-                        Text("Prénom : "),
+                        Text("Client : "),
                         Padding(padding: EdgeInsets.all(defaultPadding)),
                         Expanded(child:
-                        TextFormField(
-                          //controller: _firstNameTextController,
-                          decoration: const InputDecoration(hintText: 'First name'),
-                        ),
+                          // Dropdown contenant nom prénom avec en paramètre un id
+                          TextFormField(
+                            //controller: _firstNameTextController,
+                            decoration: const InputDecoration(hintText: 'First name'),
+                          ),
                         ),
                       ],
                     ),
-                    TextFormField(
-                      //controller: _emailTextController,
-                      decoration: const InputDecoration(hintText: 'sample.example@gmail.com'),
                     ),
                   ],
                 ),
+              ],
+            ),
+          ),
+          // Adresse
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Adresse"),
+
+              ],
+            ),
+          ),
+          // Livraison
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Livraison"),
+
+              ],
+            ),
+          ),
+          // Produits
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Produits"),
+
               ],
             ),
           ),

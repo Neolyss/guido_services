@@ -41,7 +41,7 @@ class G {
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
     //developer.log(response.toString());
-    return await jsonDecode(response!.data)['data'][0];
+    return await jsonDecode(response!.data)['data'];
   }
 
   static Future<Map<String, dynamic>> recupAllInfoClients () async {
@@ -56,7 +56,8 @@ class G {
     return await jsonDecode(response!.data);
   }
 
-  static Future<void> createClient (String Nom_client, String  Prenom_client, String Email, int Points_fixe, int Id_type) async {
+  static Future<String> createClient (String Nom_client, String  Prenom_client, String Email, int Points_fixe, int Id_type) async {
+    Response? response;
     try {
       String url = 'http://ensim.serveurtom.fr:7200/client/create/';
       var params = {
@@ -66,10 +67,11 @@ class G {
         "Points_fixe":Points_fixe,
         "Id_type":Id_type
       };
-      await RequeteHttp.methodePost(url, params);
+      response = await RequeteHttp.methodePost(url, params);
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
+    return await jsonDecode(response!.data)["data"]["id"];
   }
 
   static Future<void> createAdresse (String Numero, String Nom, String Complement, String Code_postal, String Ville,String Code_pays_tel, String Tel, String Id_client) async {
@@ -355,4 +357,27 @@ class G {
     }
     return response?.data['data'];
   }
+
+  static Future<Map<String, dynamic>> getAllTypes() async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/types/getAll/';
+      response = await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return await jsonDecode(response?.data);
+  }
+
+  static Future<Map<String, dynamic>> getAllReseaux() async {
+    Response? response;
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/reseaux/getAll/';
+      response = await Dio().get(url);
+    } catch (error, stackTrace){
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+    return await jsonDecode(response?.data);
+  }
+
 }

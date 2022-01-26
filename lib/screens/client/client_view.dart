@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../constants.dart';
 import '../dashboard/components/header.dart';
+import 'dart:developer' as developer;
 
 class ClientView extends StatefulWidget {
   const ClientView({Key? key, required this.client}) : super(key: key);
@@ -43,6 +44,7 @@ class _ClientWidgetState extends State<ClientWidget> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> client = widget.client;
+    developer.log(client.toString());
     return Column(
       children: [
         Padding(padding: EdgeInsets.all(defaultPadding),
@@ -59,32 +61,42 @@ class _ClientWidgetState extends State<ClientWidget> {
         Padding(padding: EdgeInsets.all(defaultPadding),
           child: Wrap(
             spacing: 20,
+            crossAxisAlignment: WrapCrossAlignment.center,
             direction: Axis.horizontal,
             children: [
-              Text("Numero : ${client["numero_adresse"] ?? "Aucun"}"),
-              Text("Nom Adresse : ${client["nom_adresse"] ?? "Aucun"}"),
-              Text("${client["complement"] != null ? "Complément : ${client["complement"]}" : ""}"),
+              Text("Email : ${client["email_client"]}"),
             ],
           ),
         ),
-        /*Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Padding(padding: EdgeInsets.all(defaultPadding),
+          child: Wrap(
+            spacing: 20,
+            direction: Axis.horizontal,
             children: [
-              Text("Numero : ${client["numero_adresse"] ?? "Aucun"}"),
-              Text("Nom Adresse : ${client["nom_adresse"] ?? "Aucun"}"),
-              Text("${client["complement"] != null ? "Complément: ${client["complement"]}" : ""}"),
+              Text("Numero : ${client["adresse"]["numero"] ?? "Aucun"}"),
+              Text("Nom Adresse : ${client["adresse"]["nom"] ?? "Aucun"}"),
+              Text("${client["adresse"]["complement"] != null ? "Complément : ${client["adresse"]["complement"]}" : ""}"),
             ],
-        ),*/
-        if(client["telephone_adresse"] != null)
+          ),
+        ),
+        if(client["adresse"]["ville"] != null)
           Padding(padding: EdgeInsets.all(defaultPadding),
             child: Wrap(
               spacing: 20,
               children: [
-                Text("Téléphone : ${client["code_pays_telephone"]} ${client["telephone_adresse"]}"),
+                Text("Location : ${client["adresse"]["code_postal"]} ${client["adresse"]["ville"]}"),
               ],
             ),
           ),
-        //Text(client["ville"] ?? "Null"),
+        if(client["adresse"]["telephone"] != null)
+          Padding(padding: EdgeInsets.all(defaultPadding),
+            child: Wrap(
+              spacing: 20,
+              children: [
+                Text("Téléphone : ${client["adresse"]["code_pays_telephone"]} ${client["adresse"]["telephone"]}"),
+              ],
+            ),
+          ),
       ],
     );
   }

@@ -1,6 +1,8 @@
+import 'package:admin/models/generique.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../constants.dart';
 import '../../../models/RecentFile.dart';
@@ -13,6 +15,12 @@ class CommandsView extends StatefulWidget {
 }
 
 class _CommandsViewState extends State<CommandsView> {
+
+  Future<Map<String, dynamic>> getCommands(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return G.commandeInfoAllResponsable(prefs.getString("login"));
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,12 +49,23 @@ class _CommandsViewState extends State<CommandsView> {
           Padding(padding: EdgeInsets.all(defaultPadding)),
           SizedBox(
             width: double.infinity,
-            child: Wrap(
-              runSpacing: 10,
-              children: [
-                CommandView(),
-              ],
-            ),
+            child: FutureBuilder<Map<String, dynamic>>(
+              //future: getCommands(context),
+              builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                if (snapshot.hasData) {
+                  return Wrap(
+                    runSpacing: 10,
+                    children: [
+                      CommandView(),
+                    ],
+                  );
+                } else if(snapshot.hasError) 
+                  return Container();
+                else {
+                  return Container();
+                }
+              },
+            )
           ),
         ],
       ),

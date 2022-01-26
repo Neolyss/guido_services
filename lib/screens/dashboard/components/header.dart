@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:admin/controllers/CurrentPageController.dart';
 import 'package:admin/controllers/MenuController.dart';
 import 'package:admin/responsive.dart';
@@ -70,23 +72,36 @@ class ProfileCard extends StatelessWidget {
           Icon(Icons.keyboard_arrow_down),
         ],
       ),*/
-          child: ExpansionTile(
-            title: Text("Connected"),
-            children: [
-              GestureDetector(
-                child: Row(
+          child: FutureBuilder<SharedPreferences>(
+            future: SharedPreferences.getInstance(),
+            builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+              if(snapshot.hasData) {
+                return ExpansionTile(
+                  title: Text(snapshot.data!.getString("login")!),
                   children: [
-                    Text("Disconnect"),
-                    IconButton(
-                      onPressed: () => { disconnect(context) },
-                      icon: Icon(Icons.settings_power),
+                    GestureDetector(
+                      child: Row(
+                        children: [
+                          Text("Disconnect"),
+                          IconButton(
+                            onPressed: () => { disconnect(context) },
+                            icon: Icon(Icons.settings_power),
+                          ),
+                        ],
+                      ),
+                      onTap: () { disconnect(context); } ,
                     ),
                   ],
-                ),
-                onTap: () { disconnect(context); } ,
-              ),
-            ],
-          ),
+                );
+              } else if(snapshot.hasError) {
+                return Text("Error occured");
+              } else {
+                return ExpansionTile(
+                  title: Text(""),
+                );
+              }
+            },
+          )
         ),
     );
   }
