@@ -10,7 +10,7 @@ import 'components/side_menu.dart';
 class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //redirect(context);
+    redirect(context);
     return Scaffold(
       key: context.read<MenuController>().scaffoldKey,
       drawer: SideMenu(),
@@ -39,7 +39,7 @@ class MainScreen extends StatelessWidget {
 
 void redirect(BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  if(prefs.get("login") == null) {
+  if(prefs.get("connected") == null) {
     Navigator.pushNamed(context, "/login");
   }
 }

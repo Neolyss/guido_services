@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:admin/models/CRUDAll.dart';
 import 'package:dio/dio.dart';
+import 'dart:developer' as developer;
 
 class G {
   static Future<void> deleteClient (var idClient) async {
@@ -37,18 +40,20 @@ class G {
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
-    return response?.data['data'][0];
+    //developer.log(response.toString());
+    return await jsonDecode(response!.data)['data'][0];
   }
 
   static Future<Map<String, dynamic>> recupAllInfoClients () async {
     Response? response;
+    Map<String, dynamic> json;
     try {
       String url = 'http://ensim.serveurtom.fr:7200/info/all/client/get/';
       response = await Dio().get(url);
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
-    return response?.data['data'];
+    return await jsonDecode(response!.data);
   }
 
   static Future<void> createClient (String Nom_client, String  Prenom_client, String Email, int Points_fixe, int Id_type) async {
@@ -212,7 +217,7 @@ class G {
     }
   }
 
-  static Future<void> modificationClient (String id_client, String email_client, String nom_client, String points_fixe_client, String prenom_client) async {
+  static Future<void> modificationClient (String id_client, String email_client, String nom_client, int points_fixe_client, String prenom_client) async {
     try {
       String url = 'http://ensim.serveurtom.fr:7200/users/update/user/data/';
       var params = {
@@ -272,7 +277,8 @@ class G {
     }
   }
 
-  static Future<void> modifAdresse (String id_adresse, String numero_adresse, String nom_adresse, String complement, String code_postal, String ville, String code_pays_telephone, String telephone_adresse, String id_client) async {
+  static Future<void> modifAdresse (int id_adresse, String numero_adresse, String nom_adresse, String complement, String code_postal, String ville, String code_pays_telephone, String telephone_adresse, String id_client) async {
+    developer.log("bif");
     try {
       String url = 'http://ensim.serveurtom.fr:7200/users/modif/adresse/';
       var params = {
@@ -304,7 +310,7 @@ class G {
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
-    return response as int;
+    return int.parse(response?.data);
   }
 
 

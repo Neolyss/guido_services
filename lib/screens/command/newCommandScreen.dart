@@ -1,15 +1,21 @@
-import 'package:admin/controllers/MenuController.dart';
-import 'package:admin/responsive.dart';
-import 'package:admin/screens/dashboard/dashboard_screen.dart';
-import 'package:admin/screens/newClient/components/form.dart';
+import 'package:admin/screens/command/command.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/src/provider.dart';
 
 import '../../constants.dart';
+import '../../controllers/MenuController.dart';
+import '../../responsive.dart';
 import '../dashboard/components/header.dart';
 import '../main/components/side_menu.dart';
 
-class NewClientScreen extends StatelessWidget {
+class CommandScreen extends StatefulWidget {
+  const CommandScreen({Key? key}) : super(key: key);
+
+  @override
+  _CommandScreenState createState() => _CommandScreenState();
+}
+
+class _CommandScreenState extends State<CommandScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +44,7 @@ class NewClientScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FormWidget(),
+                            CommandFormView(),
                           ],
                         ),
                       ),

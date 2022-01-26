@@ -1,7 +1,9 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../../constants.dart';
+import '../../../models/generique.dart';
 import '../../dashboard/components/header.dart';
 import 'dart:developer' as developer;
 
@@ -38,6 +40,9 @@ class GridClientsView extends StatefulWidget {
 }
 
 class _GridClientsViewState extends State<GridClientsView> {
+
+  late List<DataRow> _rows;
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,34 +54,62 @@ class _GridClientsViewState extends State<GridClientsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Clients",
-            style: Theme.of(context).textTheme.subtitle1,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Clients",
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              TextButton(
+                onPressed: () => { Navigator.pushNamed(context, "/newClient"), } ,
+                child: Row(
+                  children: [
+                    Icon(Icons.add),
+                    Text("New Client"),
+                  ],
+                ),
+              ),
+            ],
           ),
           SizedBox(
             width: double.infinity,
-            child: DataTable2(
-              columnSpacing: defaultPadding,
-              showCheckboxColumn: false,
-              minWidth: 600,
-              columns: [
-                DataColumn(
-                  label: Text("File Name"),
-                ),
-                DataColumn(
-                  label: Text("Date"),
-                ),
-                DataColumn(
-                  label: Text("Size"),
-                ),
-              ],
-              rows: [
-                clientDataRow(context),
-              ],
-              /*rows: List.generate(
+            child: FutureBuilder<Map<String, dynamic>>(
+              future: G.recupAllInfoClients(),
+              builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                if (snapshot.hasData) {
+                  return DataTable2(
+                    columnSpacing: defaultPadding,
+                    showCheckboxColumn: false,
+                    minWidth: 600,
+                    columns: [
+                      DataColumn(
+                        label: Text("Nom"),
+                      ),
+                      DataColumn(
+                        label: Text("Prenom"),
+                      ),
+                      DataColumn(
+                        label: Text("Email"),
+                      ),
+                      DataColumn(
+                          label: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 50),
+                          ),
+                      ),
+                    ],
+                    rows: clientsDataList(context, snapshot.data!),
+                    /*rows: List.generate(
                 demoRecentFiles.length,
                     (index) => recentFileDataRow(demoRecentFiles[index]),
               ),*/
+                  );
+                } else if(snapshot.hasError) {
+                  return Container();
+                } else {
+                  return Container();
+                }
+              },
             ),
           ),
         ],
@@ -85,30 +118,30 @@ class _GridClientsViewState extends State<GridClientsView> {
   }
 }
 
-DataRow clientDataRow(BuildContext context/*Client client*/) {
+List<DataRow> clientsDataList(BuildContext context, Map<String, dynamic> data) {
+  List<DataRow> rows = [];
+  data["data"].map((client) => clientDataRow(context, client)).forEach(rows.add);
+  return rows;
+}
+
+DataRow clientDataRow(BuildContext context, Map<String, dynamic> client) {
   return DataRow(
     cells: [
+      DataCell(Text(client["nom_client"])),
+      DataCell(Text(client["prenom_client"])),
+      DataCell(Text(client["email_client"])),
       DataCell(
-        Row(
-          children: [
-            /*SvgPicture.asset(
-              fileInfo.icon!,
-              height: 30,
-              width: 30,
-            ),*/
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-              child: Text("fileInfo.title!"),
-            ),
-          ],
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 50), //SET max width
+          child: Icon(Icons.delete, color: Colors.red,),
         ),
+        onTap: () => {
+          G.deleteClient(client["nom_client"]).then((value) => Navigator.pushNamed(context, "/clients"),),
+        }
       ),
-      DataCell(Text("fileInfo.date!")),
-      DataCell(Text("fileInfo.size!")),
     ],
     onSelectChanged: (value) {
-      developer.log("ez");
-      Navigator.pushNamed(context, "/client", arguments: "1");
+      Navigator.pushNamed(context, "/client", arguments: client["id_client"]);
     },
   );
 }

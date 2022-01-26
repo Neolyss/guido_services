@@ -1,11 +1,19 @@
+import 'package:admin/models/generique.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants.dart';
 import '../../controllers/MenuController.dart';
 import '../../responsive.dart';
+import '../dashboard/components/header.dart';
 import '../main/components/side_menu.dart';
-import 'component/client_view.dart';
+import 'client_form.dart';
+import 'client_view.dart';
+import 'dart:developer' as developer;
+
+import 'new_client_screen.dart';
 
 class ClientScreen extends StatefulWidget {
   const ClientScreen({Key? key}) : super(key: key);
@@ -15,7 +23,19 @@ class ClientScreen extends StatefulWidget {
 }
 
 class _ClientScreenState extends State<ClientScreen> {
-  Future<String> getClient(BuildContext context) async {
+
+  late Future<Map<String, dynamic>> client;
+  late IconData icon;
+  late String key = "View";
+
+  @override
+  void initState() {
+    icon = Icons.edit;
+    key = "View";
+    super.initState();
+  }
+
+  Future<Map<String, dynamic>> getClient(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var id = ModalRoute.of(context)!.settings.arguments;
     if(id == null) { // Plus d'id
@@ -23,12 +43,16 @@ class _ClientScreenState extends State<ClientScreen> {
     } else { // Id existant
       prefs.setString("clientId", id as String);
     }
-    return id as String;
+    return G.recupAllInfoClient(id.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    Future<String> client = getClient(context);
+    client = getClient(context);
+    Map<String,Widget> widgets = {
+      "View" : ClientView(client: client,),
+      "Modify" : ClientForm(client: client),
+    };
     return Scaffold(
       key: context.read<MenuController>().scaffoldKey,
       drawer: SideMenu(),
@@ -46,17 +70,44 @@ class _ClientScreenState extends State<ClientScreen> {
             Expanded(
               // It takes 5/6 part of the screen
               flex: 5,
-              child: FutureBuilder(
-                future: client,
-                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                  if(snapshot.hasData) {
-                    return ClientView(client : snapshot.data!);
-                  } else if(snapshot.hasError) {
-                    return Text("Error please contact a admin");
-                  } else {
-                    return Container();
-                  }
-                },
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(defaultPadding),
+                  child:
+                    Column(
+                      children: [
+                        Header(),
+                        SizedBox(height: defaultPadding),
+                        Container(
+                          padding: EdgeInsets.all(defaultPadding),
+                          decoration: BoxDecoration(
+                          color: secondaryColor,
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child :
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TextButton.icon(
+                                  icon: Icon(
+                                      icon
+                                  ),
+                                  label: Text((key == "View") ? "Modify" : "View"),
+                                  onPressed: () {
+                                    setState(() {
+                                      icon = (icon == Icons.edit) ? Icons.arrow_back : Icons.edit;
+                                      key = (key == "View") ? "Modify" : "View";
+                                    });
+                                  }
+                              ),
+                              widgets[key]!
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                ),
               ),
             ),
           ],

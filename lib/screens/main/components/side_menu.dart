@@ -70,10 +70,20 @@ class SideMenu extends StatelessWidget {
             pageNumber: 2,
           ),
           DrawerListTile(
+            title: "New Command",
+            svgSrc: "assets/icons/menu_store.svg",
+            press: () {
+              Provider.of<CurrentPageController>(context, listen: false).setNamePage("New Command");
+              Provider.of<CurrentPageController>(context, listen: false).setCurrentPage(3);
+              Navigator.pushNamed(context, "/newCommand");
+            },
+            pageNumber: 3,
+          ),
+          DrawerListTile(
             title: "Settings",
             svgSrc: "assets/icons/menu_setting.svg",
             press: () {},
-            pageNumber: 3,
+            pageNumber: 4,
           ),
         ],
       ),

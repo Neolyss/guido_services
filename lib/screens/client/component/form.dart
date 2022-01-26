@@ -1,12 +1,15 @@
 import 'package:admin/models/Client.dart';
 import 'package:admin/models/Codes.dart';
+import 'package:admin/models/generique.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants.dart';
 import 'dart:developer' as developer;
 
 class FormWidget extends StatefulWidget {
-  const FormWidget({Key? key}) : super(key: key);
+  FormWidget({Key? key, this.client = const {} }) : super(key: key);
+
+  final Map<String, dynamic> client;
 
   @override
   _FormWidgetState createState() => _FormWidgetState();
@@ -15,12 +18,19 @@ class FormWidget extends StatefulWidget {
 class _FormWidgetState extends State<FormWidget> {
   final _formKey = GlobalKey<FormState>();
 
-  final _firstNameTextController = TextEditingController();
-  final _lastNameTextController = TextEditingController();
-  final _emailTextController = TextEditingController();
-  final _phoneNumberTextController = TextEditingController();
+  late TextEditingController _firstNameTextController = TextEditingController();
+  late TextEditingController _lastNameTextController = TextEditingController();
+  late TextEditingController _emailTextController = TextEditingController();
+  late TextEditingController _phoneNumberTextController = TextEditingController();
+  late TextEditingController _streetNumberTextController = TextEditingController();
+  late TextEditingController _streetTextController = TextEditingController();
+  late TextEditingController _streetComplementTextController = TextEditingController();
+  late TextEditingController _postalCodeTextController = TextEditingController();
+  late TextEditingController _cityTextController = TextEditingController();
 
+  late CountryCode _phoneCode;
   late Future<List<CountryCode>> _codes;
+  late List<CountryCode> _countryCodes;
   var _links = <Widget>[];
 
   void addLink() {
@@ -39,6 +49,54 @@ class _FormWidgetState extends State<FormWidget> {
         field,
       );
     });
+  }
+
+  @override
+  void initState() {
+    final Map<String, dynamic> client = widget.client;
+    if(widget.client.isNotEmpty) {
+      _firstNameTextController = TextEditingController(text: client["nom_client"] ?? "");
+      _lastNameTextController = TextEditingController(text: client["prenom_client"] ?? "");
+      _emailTextController = TextEditingController(text: client["email_client"] ?? "");
+      _phoneNumberTextController = TextEditingController(text: client["telephone_adresse"] ?? "");
+      _streetNumberTextController = TextEditingController(text: client["numero_adresse"] ?? "");
+      _streetTextController = TextEditingController(text: client["nom_adresse"] ?? "");
+      _streetComplementTextController = TextEditingController(text: client["complement"] ?? "");
+      _postalCodeTextController = TextEditingController(text: client["code_postal"] ?? "");
+      _cityTextController = TextEditingController(text: client["ville"] ?? "");
+    }
+    super.initState();
+  }
+
+  void submitForm() {
+    final Map<String, dynamic> client = widget.client;
+    if(client.isEmpty) { // Création
+      developer.log("Create new client");
+    } else { // Modif
+      String idClient = client["id_client"];
+      _countryCodes.firstWhere((element) => element.dialCode == _phoneCode.dialCode);
+      G.modificationClient(
+          idClient,
+          _emailTextController.text,
+          _lastNameTextController.text,
+          client["points_fixe"],
+          _firstNameTextController.text
+      ).then((value) => {
+        G.modifAdresse(
+          client["id_adresse"],
+          _streetNumberTextController.text,
+          _streetTextController.text,
+          _streetComplementTextController.text,
+          _postalCodeTextController.text,
+          _cityTextController.text,
+          client["code_pays_telephone"],
+          _phoneNumberTextController.text,
+          idClient,
+        ).then((value) =>
+          Navigator.pushNamed(context, "/client", arguments: idClient)
+        )
+      });
+    }
   }
 
   @override
@@ -62,17 +120,33 @@ class _FormWidgetState extends State<FormWidget> {
                     Wrap(
                       runSpacing: 10,
                       children: [
-                        TextFormField(
-                          controller: _firstNameTextController,
-                          decoration: const InputDecoration(hintText: 'First name'),
+                        Row(
+                          children: [
+                            Text("Nom : "),
+                            Padding(padding: EdgeInsets.all(defaultPadding)),
+                            Expanded(child:
+                              TextFormField(
+                                controller: _lastNameTextController,
+                                decoration: const InputDecoration(hintText: 'Last Name'),
+                              ),
+                            ),
+                          ],
                         ),
-                        TextFormField(
-                          controller: _lastNameTextController,
-                          decoration: const InputDecoration(hintText: 'Last Name'),
+                        Row(
+                          children: [
+                            Text("Prénom : "),
+                            Padding(padding: EdgeInsets.all(defaultPadding)),
+                            Expanded(child:
+                              TextFormField(
+                                controller: _firstNameTextController,
+                                decoration: const InputDecoration(hintText: 'First name'),
+                              ),
+                            ),
+                          ],
                         ),
                         TextFormField(
                           controller: _emailTextController,
-                          decoration: const InputDecoration(hintText: 'timothee.noopy@gmail.com'),
+                          decoration: const InputDecoration(hintText: 'sample.example@gmail.com'),
                         ),
                       ],
                     ),
@@ -92,7 +166,7 @@ class _FormWidgetState extends State<FormWidget> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                //controller: _emailTextController,
+                                controller: _streetNumberTextController,
                                 decoration: const InputDecoration(hintText: 'N° Rue'),
                               ),
                             ),
@@ -100,7 +174,7 @@ class _FormWidgetState extends State<FormWidget> {
                             Expanded(
                               flex: 3,
                               child: TextFormField(
-                                //controller: _emailTextController,
+                                controller: _streetTextController,
                                 decoration: const InputDecoration(hintText: 'Rue'),
                               ),
                             ),
@@ -108,7 +182,7 @@ class _FormWidgetState extends State<FormWidget> {
                             Expanded(
                               flex: 2,
                               child: TextFormField(
-                                //controller: _emailTextController,
+                                controller: _streetComplementTextController,
                                 decoration: const InputDecoration(hintText: 'Complément'),
                               ),
                             ),
@@ -118,7 +192,7 @@ class _FormWidgetState extends State<FormWidget> {
                           children: [
                             Expanded(
                               child: TextFormField(
-                                //controller: _emailTextController,
+                                controller: _postalCodeTextController,
                                 decoration: const InputDecoration(hintText: 'Code postal'),
                               ),
                             ),
@@ -126,7 +200,7 @@ class _FormWidgetState extends State<FormWidget> {
                             Expanded(
                               flex: 4,
                               child: TextFormField(
-                                //controller: _emailTextController,
+                                controller: _cityTextController,
                                 decoration: const InputDecoration(hintText: 'Ville'),
                               ),
                             ),
@@ -169,16 +243,19 @@ class _FormWidgetState extends State<FormWidget> {
                         List<DropdownMenuItem<String>> dropdowns = [];
                         List<CountryCode>? codes = snapshot.data;
                         if (snapshot.hasData) {
-                          codes?.map((i) =>
+                          _countryCodes = codes!;
+                          _countryCodes.map((i) =>
                               DropdownMenuItem<String>(
                                 value: i.code,
                                 child: FittedBox(fit: BoxFit.cover, child: Text("${i.name} : ${i.dialCode}"),),
                               ),
                           ).forEach((e) => dropdowns.add(e));
+                          _phoneCode = codes.firstWhere((element) => element.dialCode == "+33"/*widget.client["code_pays_telephone"]*/);
                           return Expanded(
                             child: DropdownButtonFormField<String>(
                               onChanged: (value) {},
                               hint: Text("Dial Phone"),
+                              value: "FR",
                               items: dropdowns,
                               isExpanded: true,
                             ),
@@ -234,7 +311,11 @@ class _FormWidgetState extends State<FormWidget> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextButton(
-                  onPressed: () {  },
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      submitForm();
+                    }
+                  },
                   child: Text("Valider"),
                 ),
               ),

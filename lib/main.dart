@@ -3,9 +3,10 @@ import 'package:admin/controllers/CurrentPageController.dart';
 import 'package:admin/controllers/MenuController.dart';
 import 'package:admin/screens/client/client.dart';
 import 'package:admin/screens/clients/clients.dart';
+import 'package:admin/screens/command/command.dart';
 import 'package:admin/screens/login/login.dart';
 import 'package:admin/screens/main/main_screen.dart';
-import 'package:admin/screens/newClient/new_client_screen.dart';
+import 'package:admin/screens/client/new_client_screen.dart';
 import 'package:admin/screens/register/register.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -59,8 +60,32 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (context) => CurrentPageController(2, "New Client")),
             ],
           ),
-          "/register" : (context) => Register(),
-          "/login" : (context) => Login(),
+          "/register" : (context) => MultiProvider(
+            child: Register(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => CurrentPageController(-1, "Register")),
+            ],
+          ),
+          "/login" : (context) => MultiProvider(
+            child: Login(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => CurrentPageController(-1, "Login")),
+            ],
+          ),
+          "/newCommand" : (context) => MultiProvider(
+            child: CommandScreen(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => MenuController(),),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(3, "New Command")),
+            ],
+          ),
+          "/command" : (context) => MultiProvider(
+            child: CommandScreen(),
+            providers: [
+              ChangeNotifierProvider(create: (context) => MenuController(),),
+              ChangeNotifierProvider(create: (context) => CurrentPageController(0, "Command")),
+            ],
+          ),
         },
       );
   }

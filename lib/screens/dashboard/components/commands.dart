@@ -24,9 +24,19 @@ class _CommandsViewState extends State<CommandsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Clients",
-            style: Theme.of(context).textTheme.subtitle1,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Commands",
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+              TextButton.icon(
+                  onPressed: () => { Navigator.pushNamed(context, "/newCommand"), },
+                  icon: Icon(Icons.add),
+                  label: Text("New Command"),
+              ),
+            ],
           ),
           Padding(padding: EdgeInsets.all(defaultPadding)),
           SizedBox(
@@ -55,8 +65,17 @@ class _CommandViewState extends State<CommandView> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text('ExpansionTile 1'),
-      subtitle: Text('Trailing expansion arrow icon'),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Command mes couilles"),
+          IconButton(
+              onPressed: () => { Navigator.pushNamed(context, "/command"), },
+              icon: Icon(Icons.edit),
+          ),
+        ],
+      ),
+      //subtitle: Text('Trailing expansion arrow icon'),
       children: <Widget>[
         ListTile(title: Text('This is tile number 1')),
       ],
