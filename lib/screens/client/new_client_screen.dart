@@ -36,14 +36,8 @@ class NewClientScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Header(),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              FormWidget(),
-                            ],
-                          ),
-                        ),
+                        Padding(padding: EdgeInsets.all(defaultPadding*2)),
+                        FormWidget(),
                       ],
                     ),
                   ),
