@@ -29,21 +29,23 @@ class NewClientScreen extends StatelessWidget {
             // We want this side menu only for large screen
             Expanded(
               flex: 5,
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.all(defaultPadding),
-                  child: Column(
-                    children: [
-                      Header(),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FormWidget(),
-                          ],
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.all(defaultPadding),
+                    child: Column(
+                      children: [
+                        Header(),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              FormWidget(),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
