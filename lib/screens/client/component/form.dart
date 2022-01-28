@@ -317,8 +317,8 @@ class _FormWidgetState extends State<FormWidget> {
                               ),
                           ).forEach((e) => dropdowns.add(e));
                           if(widget.client.isNotEmpty && !widget.client["adresse"].isEmpty) {
-                            developer.log(widget.client["adresse"]["code_pays_telephone"]);
-                            _phoneCode = codes.firstWhere((element) => element.dialCode == widget.client["adresse"]["code_pays_telephone"]);
+                            String dialCode = widget.client["adresse"]["code_pays_telephone"];
+                            _phoneCode = codes.firstWhere((element) => element.dialCode == ((dialCode == "") ? "+33" : dialCode));
                             _code = _phoneCode.code;
                           }
                           return Expanded(
