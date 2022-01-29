@@ -8,7 +8,6 @@ import '../../../constants.dart';
 import '../../../models/Bill.dart';
 import '../../../models/Commande.dart';
 import 'package:excel/excel.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:developer' as developer;
 
@@ -122,11 +121,11 @@ class _CommandViewState extends State<CommandView> {
     ];
     excel.appendRow("Sheet1" , columns);
     String outputFile = "/excel.xlsx";
-    excel.encode()?.then((onValue) {
+    /*excel.encode()?.then((onValue) {
       io.File(outputFile)
         ..createSync(recursive: true)
         ..writeAsBytesSync(onValue);
-    });
+    });*/
   }
   
   void generateBill(String commandId) async {
