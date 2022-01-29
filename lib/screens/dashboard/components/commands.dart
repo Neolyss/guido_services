@@ -56,6 +56,7 @@ class _CommandsViewState extends State<CommandsView> {
             child: FutureBuilder<Map<String, dynamic>>(
               future: getCommands(context),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                print("snapshot.hasData : "+snapshot.hasData.toString());
                 if (snapshot.hasData) {
                   List<Command> commands = Command.getCommandsFromJson(snapshot.data!);
                   return Wrap(

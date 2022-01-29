@@ -93,7 +93,8 @@ class G {
     }
   }
 
-  static Future<void> createCommande (String Etat_commande, String Pseudo_responsable, String Id_client) async {
+  static Future<String> createCommande (String Etat_commande, String Pseudo_responsable, String Id_client) async {
+    Response? response;
     try {
       String url = 'http://ensim.serveurtom.fr:7200/commande/create/';
       var params = {
@@ -101,10 +102,11 @@ class G {
         "Pseudo_responsable":Pseudo_responsable,
         "Id_client":Id_client
       };
-      await RequeteHttp.methodePost(url, params);
+      response = await RequeteHttp.methodePost(url, params);
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
+    return jsonDecode(response?.data)['data']['id'];
   }
 
   static Future<void> createFacture (String Id_commande, String Frais_service, String Frais_livraison, String Promo) async {
@@ -379,5 +381,7 @@ class G {
     }
     return await jsonDecode(response?.data);
   }
+
+  //static void ajtLivraison
 
 }

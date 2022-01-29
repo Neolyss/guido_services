@@ -77,6 +77,7 @@ class _GridClientsViewState extends State<GridClientsView> {
             child: FutureBuilder<Map<String, dynamic>>(
               future: G.recupAllInfoClients(),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                print("snapshot.hasData client_view :" +snapshot.hasData.toString());
                 if (snapshot.hasData) {
                   return DataTable2(
                     columnSpacing: defaultPadding,
