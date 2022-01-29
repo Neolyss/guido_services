@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
               ChangeNotifierProvider(create: (context) => CurrentPageController(0, "Command")),
             ],
           ),
-        },
+         },
       );
   }
 }

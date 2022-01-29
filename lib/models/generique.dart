@@ -344,7 +344,7 @@ class G {
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
-    return response?.data['data'];
+    return jsonDecode(response?.data);
   }
 
   static Future<Map<String, dynamic>> factureGetCommande (id_commande) async {
@@ -355,7 +355,7 @@ class G {
     } catch (error, stackTrace){
       print("Exception occurred: $error  stackTrace: $stackTrace");
     }
-    return response?.data['data'];
+    return jsonDecode(response?.data)['data'];
   }
 
   static Future<Map<String, dynamic>> getAllTypes() async {
