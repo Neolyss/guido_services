@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:admin/models/generique.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
@@ -52,17 +54,27 @@ class _CommandsViewState extends State<CommandsView> {
             child: FutureBuilder<Map<String, dynamic>>(
               //future: getCommands(context),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+                print("snapshot.hasData : "+snapshot.hasData.toString());
                 if (snapshot.hasData) {
                   return Wrap(
                     runSpacing: 10,
                     children: [
                       CommandView(),
+                      Text("test"),
                     ],
                   );
                 } else if(snapshot.hasError) 
-                  return Container();
+                  return Container(
+                    child: Center(
+                      child: Text("Aucune commande"),
+                    ),
+                  );
                 else {
-                  return Container();
+                  return Container(
+                    child: Center(
+                      child: Text("Aucune commande"),
+                    ),
+                  );
                 }
               },
             )
