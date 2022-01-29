@@ -23,6 +23,15 @@ class G {
     }
   }
 
+  static Future<void> deleteCommande (var idCommand, var idClient) async {
+    try {
+      String url = 'http://ensim.serveurtom.fr:7200/commande/delete/$idCommand/$idClient';
+      await Dio().get(url);
+    } catch (error, stackTrace) {
+      print("Exception occurred: $error  stackTrace: $stackTrace");
+    }
+  }
+
   static Future<void> deleteMoyenPaiement (var idMoyen) async {
     try {
       String url = 'http://ensim.serveurtom.fr:7200/moyen_paiement/delete/'+idMoyen;
@@ -282,7 +291,6 @@ class G {
   }
 
   static Future<void> modifAdresse (int id_adresse, String numero_adresse, String nom_adresse, String complement, String code_postal, String ville, String code_pays_telephone, String telephone_adresse, String id_client) async {
-    developer.log("bif");
     try {
       String url = 'http://ensim.serveurtom.fr:7200/users/modif/adresse/';
       var params = {
@@ -317,7 +325,7 @@ class G {
     return int.parse(response?.data);
   }
 
-  static Future<Map<String, dynamic>> commandeInfo (id_commande) async {
+  static Future<Map<String, dynamic>> commandeInfo (String id_commande) async {
     Response? response;
     try {
       String url = 'http://ensim.serveurtom.fr:7200/commande/info/'+id_commande;

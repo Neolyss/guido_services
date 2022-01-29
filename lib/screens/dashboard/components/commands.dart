@@ -102,15 +102,85 @@ class _CommandViewState extends State<CommandView> {
             icon: Icon(Icons.account_balance_outlined),
             label: Text("Bill"),
           ),
-          IconButton(
+          Row(children: [
+            IconButton(
               onPressed: () => { Navigator.pushNamed(context, "/command"), },
               icon: Icon(Icons.edit),
-          ),
+            ),
+            IconButton(
+              onPressed: () => { G.deleteCommande(c.idCommand, c.idClient), Navigator.pushNamed(context, "/") },
+              icon: Icon(Icons.delete),
+            ),
+          ],),
         ],
       ),
       //subtitle: Text('Trailing expansion arrow icon'),
       children: <Widget>[
-        ListTile(title: Text('This is tile number 1')),
+        FutureBuilder<Map<String, dynamic>>(
+          future: G.commandeInfo(c.idCommand),
+          builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+            if (snapshot.hasData) {
+              Map<String, dynamic> json = snapshot.data!;
+              var header = json["commande"];
+              var livrer = json["livrer"];
+              var adresse = json["adresse"];
+              var produits = json["produits"];
+              return Column(
+                children: [
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      Text(header["id_commande"]),
+                      Text(header["date_commande"]),
+                      Text(header["etat_commande"]),
+                      Text(header["id_client"]),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.all(defaultPadding)),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      Text(livrer["date_livraison"] ?? "Aucune"),
+                      Text(livrer["num_colis"] ?? "Aucun"),
+                      Text(livrer["nom_livreur"] ?? "Aucun"),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.all(defaultPadding)),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      Text(adresse["numero_adresse"] ?? "Aucune"),
+                      Text(adresse["nom_adresse"] ?? "Aucun"),
+                      Text(adresse["complement"] ?? "Aucun"),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.all(defaultPadding)),
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      Text(adresse["code_postal"] ?? "Aucune"),
+                      Text(adresse["ville"] ?? "Aucun"),
+                      Text(adresse["code_pays_telephone"] ?? "Aucun"),
+                      Text(adresse["telephone_adresse"] ?? "Aucun"),
+                    ],
+                  ),
+                  Padding(padding: EdgeInsets.all(defaultPadding)),
+                  for(var item in produits) Wrap(children: [
+                    Text("PRODUIT : "),
+                    Text(item["nom"]),
+                    Text(item["modele"]),
+                    Text(item["qtt"].toString()),
+                    Text(item["prix_unitaire"].toString()),
+                    Text(item["etat"]),],spacing: 10,)
+                ],
+              );
+            } else if(snapshot.hasError)
+              return Container(child: Text("Error please contact an admin"),);
+            else {
+              return Container(child: Text("Loading ..."),);
+            }
+          }
+        ),
       ],
     );
   }

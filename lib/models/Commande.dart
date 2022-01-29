@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 class Command {
 
   final String idCommand;
@@ -22,8 +24,14 @@ class Command {
   }
 
   static List<Command> getCommandsFromJson(Map<String, dynamic> json) {
+    developer.log(json.toString());
     List<Command> commands = [];
-    json["data"].map((i) => Command.fromJson(i)).forEach((e) => commands.add(e));
+    var map = json["data"];
+    for (var o in map) {
+      if(o["isActive"] == 1) {
+        commands.add(Command.fromJson(o));
+      }
+    }
     return commands;
   }
 
