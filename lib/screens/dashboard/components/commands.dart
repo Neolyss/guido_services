@@ -1,13 +1,16 @@
-import 'dart:html';
+import 'dart:io' as io;
 
 import 'package:admin/models/generique.dart';
-import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../constants.dart';
-import '../../../models/RecentFile.dart';
+import '../../../models/Bill.dart';
+import '../../../models/Commande.dart';
+import 'package:excel/excel.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:developer' as developer;
 
 class CommandsView extends StatefulWidget {
   const CommandsView({Key? key}) : super(key: key);
@@ -52,29 +55,19 @@ class _CommandsViewState extends State<CommandsView> {
           SizedBox(
             width: double.infinity,
             child: FutureBuilder<Map<String, dynamic>>(
-              //future: getCommands(context),
+              future: getCommands(context),
               builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
                 print("snapshot.hasData : "+snapshot.hasData.toString());
                 if (snapshot.hasData) {
+                  List<Command> commands = Command.getCommandsFromJson(snapshot.data!);
                   return Wrap(
                     runSpacing: 10,
-                    children: [
-                      CommandView(),
-                      Text("test"),
-                    ],
+                    children: commands.map((e) => CommandView(command: e)).toList(),
                   );
                 } else if(snapshot.hasError) 
-                  return Container(
-                    child: Center(
-                      child: Text("Aucune commande"),
-                    ),
-                  );
+                  return Container(child: Text("Error please contact an admin"),);
                 else {
-                  return Container(
-                    child: Center(
-                      child: Text("Aucune commande"),
-                    ),
-                  );
+                  return Container(child: Text("Loading ..."),);
                 }
               },
             )
@@ -86,7 +79,9 @@ class _CommandsViewState extends State<CommandsView> {
 }
 
 class CommandView extends StatefulWidget {
-  const CommandView({Key? key}) : super(key: key);
+  const CommandView({Key? key, required this.command,}) : super(key: key);
+
+  final Command command;
 
   @override
   _CommandViewState createState() => _CommandViewState();
@@ -95,11 +90,19 @@ class CommandView extends StatefulWidget {
 class _CommandViewState extends State<CommandView> {
   @override
   Widget build(BuildContext context) {
+    Command c = widget.command;
     return ExpansionTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Command mes couilles"),
+          Text(c.idCommand),
+          Text(c.dateCommand.toString()),
+          Text(c.state.name),
+          TextButton.icon(
+            onPressed: () => { generateBill(c.idCommand), },
+            icon: Icon(Icons.account_balance_outlined),
+            label: Text("Bill"),
+          ),
           IconButton(
               onPressed: () => { Navigator.pushNamed(context, "/command"), },
               icon: Icon(Icons.edit),
@@ -111,6 +114,105 @@ class _CommandViewState extends State<CommandView> {
         ListTile(title: Text('This is tile number 1')),
       ],
     );
+  }
+
+  void generateExcel() {
+    var excel = Excel.createExcel();
+    List<String> columns = [
+      "","","","","","",""
+    ];
+    excel.appendRow("Sheet1" , columns);
+    String outputFile = "/excel.xlsx";
+    excel.encode()?.then((onValue) {
+      io.File(outputFile)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(onValue);
+    });
+  }
+  
+  void generateBill(String commandId) async {
+    Map<String, dynamic> json = await G.factureGetCommande(commandId);
+    Bill bill = Bill.fromJson(json);
+    developer.log("test : "+ bill.toString());
+    double sum = 0;
+    for (var o in bill.products) {
+      sum += o.totalPrice;
+    }
+    sum += bill.deliveryFee;
+    sum += bill.serviceFee;
+    sum += bill.promotion;
+
+    final pdf = pw.Document();
+    pdf.addPage(pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.center,
+            children: [
+              pw.Text("Facture"),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.start,
+                children: [
+                  pw.Column(
+                    children: [
+                      pw.Text("N° commande : ${bill.idCommand}"),
+                      pw.Text("Date commande : ${bill.commandDate}"),
+                      pw.Text("N° facture : ${bill.id}"),
+                      pw.Text("Date de facture : ${bill.date}"),
+                    ],
+                  ),
+                ],
+              ),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.end,
+                children: [
+                  pw.Column(
+                    children: [
+                      pw.Text("N° client : ${bill.idClient}"),
+                      pw.Text("Adresse : ${bill.address}"),
+                      pw.Text("Téléphone : ${bill.phone}"),
+                    ],
+                  ),
+                ],
+              ),
+              pw.Table(
+                children: generateTable(bill),
+              ),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.end,
+                children: [
+                  pw.Text("Montant de la commande: $sum"),
+                  pw.Text("Frais de service : ${ bill.serviceFee }"),
+                  pw.Text("Frais de livraison : ${ bill.deliveryFee }"),
+                  pw.Text("Promotion : ${ bill.promotion }"),
+                ],
+              ),
+            ],
+          );
+        }
+    ));
+    io.File file = io.File("facture/bill_${bill.id}");
+    file.writeAsBytes(await pdf.save());
+  }
+
+  List<pw.TableRow> generateTable(Bill bill) {
+    List<pw.TableRow> rows = [];
+    rows.add(pw.TableRow(children: [
+      pw.Text("Name"),
+      pw.Text("Model"),
+      pw.Text("Quantity"),
+      pw.Text("UnitPrice"),
+      pw.Text("TotalPrice"),
+    ]));
+    bill.products.forEach((element) {
+      rows.add(pw.TableRow(children: [
+        pw.Text(element.name),
+        pw.Text(element.model),
+        pw.Text(element.quantity.toString()),
+        pw.Text(element.unitPrice.toString()),
+        pw.Text(element.state.name),
+      ]));
+    });
+    return rows;
   }
 }
 
